@@ -1,38 +1,30 @@
 import { AuthenticatedRequest } from "@/middlewares";
-import { CredentialBodyParams, DeleteProcess } from "@/protocols";
+import { CreateCredential } from "@/protocols";
 import { credentialService } from "@/services";
+import { Credential } from "@prisma/client";
 import { Response } from "express";
 import httpStatus from "http-status";
 
 
-export async function createCredential(req: AuthenticatedRequest, res: Response) {
+export async function postCredential(req: AuthenticatedRequest, res: Response) {
+    const body = req.body as CreateCredential;
 
-    const userId = Number(req.userId)
+    await credentialService.postCredential(body);
 
-    const { title, url, username, password } = req.body as CredentialBodyParams
-
-    await credentialService.postCredential(userId, title, url, username, password)
-
-    return res.sendStatus(httpStatus.CREATED)
-}
-
-export async function getCredential(req: AuthenticatedRequest, res: Response) {
-
-    const userId = Number(req.userId)
-
-    const result = await credentialService.getCredential(userId)
-
-    return res.status(httpStatus.OK).send(result)
+    return res.sendStatus(httpStatus.CREATED);
 }
 
 export async function deleteCredential(req: AuthenticatedRequest, res: Response) {
+    const { id, userId } = req.body as Credential;
 
-    const userId = Number(req.userId)
+    await credentialService.deleteCredential(userId, id);
 
-    const { id } = req.body as DeleteProcess
+    return res.sendStatus(httpStatus.OK);
+}
 
-    const result = await credentialService.deleteCredential(userId, id)
+export async function getCredential(req: AuthenticatedRequest, res: Response) {
+    const { userId } = req.body as Credential;
+    const result = await credentialService.getCredential(userId);
 
-    return res.sendStatus(httpStatus.OK)
-
+    return res.status(httpStatus.OK).send(result);
 }

@@ -1,14 +1,13 @@
-import prisma from "@/database/database";
-import { CredentialParams } from "@/protocols";
-import { verify } from "crypto";
+import prisma from "@/database/db";
+import { CreateCredential } from "@/protocols";
 
-async function createNewCredential(data: CredentialParams) {
+async function createCredential(data: CreateCredential) {
     return prisma.credential.create({
         data
     })
 }
 
-async function verifyCredential(userId: number, title: string, username: string) {
+async function findCredential(userId: number, title: string, username: string) {
     return prisma.credential.findFirst({
         where: {
             userId,
@@ -18,8 +17,7 @@ async function verifyCredential(userId: number, title: string, username: string)
     })
 }
 
-async function getCredentialById(userId: number,) {
-
+async function getCredentialById(userId: number) {
     return prisma.credential.findMany({
         where: {
             userId,
@@ -28,17 +26,15 @@ async function getCredentialById(userId: number,) {
 }
 
 async function getCredentialId(userId: number, id: number) {
-
     return prisma.credential.findMany({
         where: {
             id,
-            userId,
-
+            userId
         }
     })
 }
 
-async function deleteCredentialById(id: number, userId: number) {
+async function deleteCredential(id: number, userId: number) {
     return prisma.credential.delete({
         where: {
             userId,
@@ -49,10 +45,10 @@ async function deleteCredentialById(id: number, userId: number) {
 
 
 export const credentialRepository = {
-    createNewCredential,
-    verifyCredential,
+    createCredential,
+    findCredential,
     getCredentialById,
-    deleteCredentialById,
+    deleteCredential,
     getCredentialId
 
 }

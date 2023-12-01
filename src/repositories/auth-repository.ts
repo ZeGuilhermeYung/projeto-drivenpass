@@ -1,7 +1,6 @@
-import prisma from "@/database/database"
+import prisma from "@/database/db";
 
 async function createNewSession(userId: number, token: string) {
-
     return prisma.session.create({
         data: {
             userId,
@@ -11,7 +10,6 @@ async function createNewSession(userId: number, token: string) {
 }
 
 async function findToken(token: string) {
-
     return prisma.session.findFirst({
         where: {
             token: token
@@ -19,9 +17,7 @@ async function findToken(token: string) {
     })
 }
 
-
 export const authRepository = {
-
     createNewSession,
     findToken
 }   

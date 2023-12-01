@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import * as jwt from 'jsonwebtoken';
 
-import { unauthorizedError } from '@/erros/unauthorized-error';
+import { unauthorizedError } from '@/errors/unauthorized-error';
 import { authRepository } from '@/repositories';
 
 

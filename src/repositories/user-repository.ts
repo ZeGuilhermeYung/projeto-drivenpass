@@ -1,4 +1,4 @@
-import prisma from "@/database/database"
+import prisma from "@/database/db";
 
 async function findByEmail(email: string) {
     return prisma.user.findFirst({

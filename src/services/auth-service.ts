@@ -1,4 +1,4 @@
-import { invalidEmailError, invalidPasswordError } from "@/erros"
+import { invalidEmailError, invalidPasswordError } from "@/errors"
 import { authRepository, userRepository } from "@/repositories"
 import * as jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'

@@ -1,17 +1,12 @@
-import { Network } from "@prisma/client";
 import Joi from "joi";
-import { DeleteProcess } from "@/protocols";
+import { CreateNetwork, Id } from "@/protocols";
 
-
-export type NetworkBodyParams = Omit<Network, 'id' | 'userId'>
-
-
-export const networkBody = Joi.object<NetworkBodyParams>({
+export const networkBody = Joi.object<CreateNetwork>({
     network: Joi.string().required(),
     title: Joi.string().required(),
     password: Joi.string().required()
 })
 
-export const networkDelete = Joi.object<DeleteProcess>({
+export const networkDelete = Joi.object<Id>({
     id: Joi.number().min(1).required()
 })

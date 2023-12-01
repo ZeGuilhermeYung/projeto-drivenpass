@@ -1,9 +1,9 @@
-import { CredentialParams, DeleteProcess } from "@/protocols";
+import { CreateCredential, Id } from "@/protocols";
 import Joi from "joi";
 
 
 
-export const credentialSchema = Joi.object<CredentialParams>({
+export const credentialSchema = Joi.object<CreateCredential>({
 
     title: Joi.string().required(),
     url: Joi.string().uri().required(),
@@ -12,7 +12,7 @@ export const credentialSchema = Joi.object<CredentialParams>({
 
 })
 
-export const credentialDeleteById = Joi.object<DeleteProcess>({
+export const credentialDeleteById = Joi.object<Id>({
     id: Joi.number().min(1).required()
 })
 

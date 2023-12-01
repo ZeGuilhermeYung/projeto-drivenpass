@@ -1,4 +1,4 @@
-import { invalidEmailError } from "@/erros"
+import { invalidEmailError } from "@/errors"
 import { userRepository } from "@/repositories"
 import bcrypt from 'bcrypt'
 

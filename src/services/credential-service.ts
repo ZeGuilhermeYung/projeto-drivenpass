@@ -1,76 +1,61 @@
-import { duplicateCredentialError, notFoundError } from "@/erros"
-import { credentialRepository } from "@/repositories/credential-repository"
-import Cryptr from "cryptr"
-import { Credential } from "@prisma/client"
-import { required, string } from "joi"
-
-
-async function postCredential(userId: number, title: string, url: string, username: string, password: string) {
-
-    await verifyCredential(userId, title, username)
-
-    const encrypt = await encryptrPassword(password)
-
-    await credentialRepository.createNewCredential({ title, url, username, password: encrypt, userId })
-
-}
+import Cryptr from "cryptr";
+import { duplicateCredentialError, notFoundError } from "@/errors";
+import { credentialRepository } from "@/repositories/credential-repository";
+import { CreateCredential } from "@/protocols";
 
 async function verifyCredential(userId: number, title: string, username: string) {
-
-    const verifyInfo = await credentialRepository.verifyCredential(userId, title, username)
-    if (verifyInfo) throw duplicateCredentialError()
+    const verifyInfo = await credentialRepository.findCredential(userId, title, username);
+    if (verifyInfo) throw duplicateCredentialError();
 }
 
-async function encryptrPassword(password: string) {
-
-    const Cryptr = require('cryptr');
+function encryptPassword(password: string) {
     const cryptr = new Cryptr(password);
+    const encrypt = cryptr.encrypt(password);
 
-    const encrypt = cryptr.encrypt(password)
-
-    return encrypt
+    return encrypt;
 }
 
-async function decryptrPassword(password: string) {
-
-    const Cryptr = require('cryptr');
+function decryptrPassword(password: string) {
     const cryptr = new Cryptr(password);
+    const decrypt = cryptr.decrypt(password);
 
-    const decrypt = cryptr.decrypt(password)
-
-    return decrypt
+    return decrypt;
 }
 
-async function getCredential(userId: number) {
+async function postCredential(body: CreateCredential) {
+    const { title, url, username, password,  userId } = body;
 
-    const result = await getAllCredential(userId)
+    await verifyCredential(userId, title, username);
 
-    const response = result.map(rt => ({
-        ...rt,
-        password: decryptrPassword(rt.password)
-    }))
+    const hashedPassword = encryptPassword(password)
 
-
-    return result
+    await credentialRepository.createCredential({ title, url, username, password: hashedPassword, userId })
 }
 
 async function deleteCredential(userId: number, id: number) {
+    const verify = await credentialRepository.getCredentialId(userId, id);
+    if (!verify) throw notFoundError();
 
-    const verify = await credentialRepository.getCredentialId(userId, id)
-    if (!verify) throw notFoundError()
-
-    const result = await credentialRepository.deleteCredentialById(id, userId)
-    if (!result) throw notFoundError
-
+    const result = await credentialRepository.deleteCredential(id, userId);
+    if (!result) throw notFoundError;
 }
 
-async function getAllCredential(userId: number) {
+async function getCredential(userId: number) {
+    const credentials = await getCredentials(userId);
+    const result = credentials.map(credential => ({
+        ...credential,
+        password: decryptrPassword(credential.password)
+    }))
 
-    const result = await credentialRepository.getCredentialById(userId)
+    return result;
+}
 
-    if (!result) throw notFoundError()
+async function getCredentials(userId: number) {
+    const result = await credentialRepository.getCredentialById(userId);
 
-    return result
+    if (!result) throw notFoundError();
+
+    return result;
 }
 
 export const credentialService = {
