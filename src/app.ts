@@ -2,8 +2,9 @@ import express, { json, Request, Response, Express } from 'express';
 import 'express-async-errors';
 import httpStatus from 'http-status';
 import { userRouter, authRouter, networkRouter, credentialRouter } from './routes/index';
-import errorHandlingMiddleware from './middlewares/erros-middlewares';
+import errorHandlingMiddleware from './middlewares/errors-middlewares';
 import { connectDb } from './database/db';
+import { authenticateToken } from './middlewares';
 
 const app = express();
 

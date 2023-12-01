@@ -4,7 +4,7 @@ import Joi from "joi";
 
 
 export const credentialSchema = Joi.object<CreateCredential>({
-
+    userId: Joi.number().required(),
     title: Joi.string().required(),
     url: Joi.string().uri().required(),
     username: Joi.string().required(),

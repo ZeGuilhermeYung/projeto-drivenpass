@@ -1,3 +1,3 @@
-export * from './erros-middlewares'
+export * from './errors-middlewares'
 export * from './validate-middlewares' 
-export * from './authencation-middleware'
+export * from './authentication-middleware'

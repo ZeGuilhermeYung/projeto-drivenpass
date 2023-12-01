@@ -3,6 +3,8 @@ import { duplicateCredentialError, notFoundError } from '@/errors';
 import { credentialRepository } from '@/repositories/credential-repository';
 
 async function postCredential(userId: number, title: string, url: string, username: string, password: string) {
+  await 
+
   await verifyCredential(userId, title, username);
 
   this.cryptr = new Cryptr(password);

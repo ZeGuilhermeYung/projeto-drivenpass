@@ -107,7 +107,7 @@ describe('Post /credential', () => {
       await createCredentialByData(body);
 
       const response = await api.post('/credential').set('Authorization', `Bearer ${token.token}`).send(body);
-      expect(response.status).toBe(httpStatus.UNPROCESSABLE_ENTITY);
+      expect(response.status).toBe(httpStatus.CONFLICT);
     });
 
     describe('Credential is valid', () => {

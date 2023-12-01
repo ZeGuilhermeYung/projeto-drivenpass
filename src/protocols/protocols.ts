@@ -24,3 +24,5 @@ export type CreateCredential = Omit<Credential, 'id' >
 export type CredentialBodyParams = Omit<Credential, 'id' | 'userId'>;
 
 export type CreateNetwork = Omit<Network, 'id' >
+
+export type Token = { token: string };

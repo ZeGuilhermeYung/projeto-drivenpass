@@ -7,10 +7,9 @@ async function verifyUser(email: string, password: string) {
     const user = await verifyEmail(email);
 
     await verifyPasswordUser(password, user.password);
-    
     const result = await createSession(user.id);
 
-    return {token:result};
+    return { token:result };
 }
 
 async function verifyEmail(email: string) {
