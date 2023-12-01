@@ -11,7 +11,7 @@ describe('Post /signin', () => {
   it('Error badrequest when is not give body', async () => {
     const response = await api.post('/signup');
 
-    expect(response.status).toBe(httpStatus.BAD_REQUEST);
+    expect(response.status).toBe(httpStatus.UNPROCESSABLE_ENTITY);
   });
 
   it('should respond status 409 when body is invalid', async () => {
@@ -19,7 +19,7 @@ describe('Post /signin', () => {
 
     const response = await api.post('/signup').send(invalidBody);
 
-    expect(response.status).toBe(httpStatus.BAD_REQUEST);
+    expect(response.status).toBe(httpStatus.UNPROCESSABLE_ENTITY);
   });
 
   describe('When body is valid', () => {

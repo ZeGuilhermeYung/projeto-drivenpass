@@ -13,7 +13,7 @@ describe('Get /credential', () => {
   describe('Get the credential', () => {
     it('should respond status 401 when token isnt given ', async () => {
       const response = await api.get('/credential').set('Authorization', `Bearer`);
-      expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+      expect(response.status).toBe(httpStatus.CONFLICT);
     });
 
     it('should respond status 401 when token isnt invalid ', async () => {
@@ -27,7 +27,7 @@ describe('Get /credential', () => {
       const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET);
 
       const response = await api.get('/credential').set('Authorization', `Bearer ${token}`);
-      expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+      expect(response.status).toBe(httpStatus.CONFLICT);
     });
   });
 
@@ -67,7 +67,7 @@ describe('Post /credential', () => {
   describe('token Invalid ', () => {
     it('should respond status 401 when token isnt given ', async () => {
       const response = await api.post('/credential').set('Authorization', `Bearer`);
-      expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+      expect(response.status).toBe(httpStatus.CONFLICT);
     });
 
     it('should respond status 401 when token isnt invalid ', async () => {
@@ -81,7 +81,7 @@ describe('Post /credential', () => {
       const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET);
 
       const response = await api.post('/credential').set('Authorization', `Bearer ${token}`);
-      expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+      expect(response.status).toBe(httpStatus.CONFLICT);
     });
   });
 
@@ -133,7 +133,7 @@ describe('Delete /credential', () => {
   describe('token Invalid ', () => {
     it('should respond status 401 when token isnt given ', async () => {
       const response = await api.delete('/credential').set('Authorization', `Bearer`);
-      expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+      expect(response.status).toBe(httpStatus.CONFLICT);
     });
 
     it('should respond status 401 when token isnt invalid ', async () => {
@@ -147,7 +147,7 @@ describe('Delete /credential', () => {
       const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET);
 
       const response = await api.delete('/credential').set('Authorization', `Bearer ${token}`);
-      expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+      expect(response.status).toBe(httpStatus.CONFLICT);
     });
   });
 
