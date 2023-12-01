@@ -1,14 +1,13 @@
-/** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
-export default {
-  preset: "ts-jest",
-  testEnvironment: "node",
-  extensionsToTreatAsEsm: [".ts"],
-  globals: {
-    "ts-jest": {
-      useESM: true,
-    },
+module.exports = {
+  preset: 'ts-jest',
+  testEnvironment: 'node',
+  moduleDirectories: ['node_modules', 'src'],
+  transform: {
+    '.+\\.ts$': 'ts-jest',
   },
+  testMatch: ['<rootDir>/test/*/*.(test|spec).ts'],
   moduleNameMapper: {
-    "^(\\.{1,2}/.*)\\.js$": "$1",
+    '@/(.*)': '<rootDir>/src/$1',
+    '@test/(.*)': '<rootDir>/tests/$1',
   },
 };
