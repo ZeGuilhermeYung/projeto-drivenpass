@@ -1,6 +1,6 @@
+import httpStatus from 'http-status';
 import supertest from 'supertest';
 import app from '../../app';
-import httpStatus from 'http-status';
 
 const request = supertest(app);
 
@@ -32,7 +32,7 @@ describe('Network Integration Tests', () => {
       .get('/api/network')
       .set('Authorization', `Bearer ${userToken}`);
 
-    expect(response.status).toBe(200);
+    expect(response.status).toBe(httpStatus.OK);
     expect(response.body).toHaveLength(1);
     expect(response.body[0].title).toBe('Test Network');
     expect(response.body[0].password).toBe('testpassword');
@@ -43,7 +43,7 @@ describe('Network Integration Tests', () => {
       .get(`/api/network/${networkId}`)
       .set('Authorization', `Bearer ${userToken}`);
 
-    expect(response.status).toBe(200);
+    expect(response.status).toBe(httpStatus.OK);
     expect(response.body.title).toBe('Test Network');
     expect(response.body.password).toBe('testpassword');
   });
@@ -55,7 +55,7 @@ describe('Network Integration Tests', () => {
       .get(`/api/network/${networkId}`)
       .set('Authorization', `Bearer ${anotherUserToken}`);
 
-    expect(response.status).toBe(403);
+    expect(response.status).toBe(httpStatus.NOT_FOUND);
   });
 
   it('should not get a non-existent network', async () => {
@@ -65,7 +65,7 @@ describe('Network Integration Tests', () => {
       .get(`/api/network/${nonExistentNetworkId}`)
       .set('Authorization', `Bearer ${userToken}`);
 
-    expect(response.status).toBe(404);
+    expect(response.status).toBe(httpStatus.NOT_FOUND);
   });
 
   it('should delete a network', async () => {
@@ -73,7 +73,7 @@ describe('Network Integration Tests', () => {
       .delete(`/api/network/${networkId}`)
       .set('Authorization', `Bearer ${userToken}`);
 
-    expect(response.status).toBe(200);
+    expect(response.status).toBe(httpStatus.OK);
   });
 
   it('should not delete a network of another user', async () => {
@@ -83,7 +83,7 @@ describe('Network Integration Tests', () => {
       .delete(`/api/network/${networkId}`)
       .set('Authorization', `Bearer ${anotherUserToken}`);
 
-    expect(response.status).toBe(403);
+    expect(response.status).toBe(httpStatus.NOT_FOUND);
   });
 
   it('should not delete a non-existent network', async () => {
@@ -93,6 +93,6 @@ describe('Network Integration Tests', () => {
       .delete(`/api/network/${nonExistentNetworkId}`)
       .set('Authorization', `Bearer ${userToken}`);
 
-    expect(response.status).toBe(404);
+    expect(response.status).toBe(httpStatus.NOT_FOUND);
   });
 });

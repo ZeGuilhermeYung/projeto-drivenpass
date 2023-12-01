@@ -7,9 +7,9 @@ import httpStatus from "http-status";
 
 
 export async function postCredential(req: AuthenticatedRequest, res: Response) {
-    const body = req.body as CreateCredential;
+    const { userId, title, url, username, password } = req.body as CreateCredential;
 
-    await credentialService.postCredential(body);
+    await credentialService.postCredential(userId, title, url, username, password);
 
     return res.sendStatus(httpStatus.CREATED);
 }

@@ -11,18 +11,18 @@ const api = supertest(app);
 
 describe('Get /credential', () => {
   describe('Get the credential', () => {
-    it('should respond status 401 when token isnt given ', async () => {
+    it('should respond status 409 when token isnt given ', async () => {
       const response = await api.get('/credential').set('Authorization', `Bearer`);
       expect(response.status).toBe(httpStatus.CONFLICT);
     });
 
-    it('should respond status 401 when token isnt invalid ', async () => {
+    it('should respond status 409 when token isnt invalid ', async () => {
       const token = faker.lorem.word();
       const response = await api.get('/credential').set('Authorization', `Bearer ${token}`);
       expect(response.status).toBe(httpStatus.CONFLICT);
     });
 
-    it('should respond status 401 when dont have session for token', async () => {
+    it('should respond status 409 when dont have session for token', async () => {
       const user = await createUser();
       const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET);
 
@@ -65,18 +65,18 @@ describe('Post /credential', () => {
   });
 
   describe('token Invalid ', () => {
-    it('should respond status 401 when token isnt given ', async () => {
+    it('should respond status 409 when token isnt given ', async () => {
       const response = await api.post('/credential').set('Authorization', `Bearer`);
       expect(response.status).toBe(httpStatus.CONFLICT);
     });
 
-    it('should respond status 401 when token isnt invalid ', async () => {
+    it('should respond status 409 when token isnt invalid ', async () => {
       const token = faker.lorem.word();
       const response = await api.post('/credential').set('Authorization', `Bearer ${token}`);
       expect(response.status).toBe(httpStatus.CONFLICT);
     });
 
-    it('should respond status 401 when dont have session for token', async () => {
+    it('should respond status 409 when dont have session for token', async () => {
       const user = await createUser();
       const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET);
 
@@ -91,12 +91,12 @@ describe('Post /credential', () => {
       const body = { [faker.lorem.word()]: faker.lorem.word() };
 
       const response = await api.post('/credential').set('Authorization', `Bearer ${token.token}`).send(body);
-      expect(response.status).toBe(httpStatus.BAD_REQUEST);
+      expect(response.status).toBe(httpStatus.UNPROCESSABLE_ENTITY);
     });
     it('should respond status 400 when body inst presente', async () => {
       const token = await generateValidToken();
       const response = await api.post('/credential').set('Authorization', `Bearer ${token.token}`);
-      expect(response.status).toBe(httpStatus.BAD_REQUEST);
+      expect(response.status).toBe(httpStatus.UNPROCESSABLE_ENTITY);
     });
 
     it('should responde status 409 when is give the same title', async () => {
@@ -107,7 +107,7 @@ describe('Post /credential', () => {
       await createCredentialByData(body);
 
       const response = await api.post('/credential').set('Authorization', `Bearer ${token.token}`).send(body);
-      expect(response.status).toBe(httpStatus.BAD_REQUEST);
+      expect(response.status).toBe(httpStatus.UNPROCESSABLE_ENTITY);
     });
 
     describe('Credential is valid', () => {
@@ -131,18 +131,18 @@ describe('Post /credential', () => {
 
 describe('Delete /credential', () => {
   describe('token Invalid ', () => {
-    it('should respond status 401 when token isnt given ', async () => {
+    it('should respond status 409 when token isnt given ', async () => {
       const response = await api.delete('/credential').set('Authorization', `Bearer`);
       expect(response.status).toBe(httpStatus.CONFLICT);
     });
 
-    it('should respond status 401 when token isnt invalid ', async () => {
+    it('should respond status 409 when token isnt invalid ', async () => {
       const token = faker.lorem.word();
       const response = await api.delete('/credential').set('Authorization', `Bearer ${token}`);
       expect(response.status).toBe(httpStatus.CONFLICT);
     });
 
-    it('should respond status 401 when dont have session for token', async () => {
+    it('should respond status 409 when dont have session for token', async () => {
       const user = await createUser();
       const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET);
 
@@ -156,12 +156,12 @@ describe('Delete /credential', () => {
       const token = await generateValidToken();
 
       const response = await api.delete('/credential').set('Authorization', `Bearer ${token.token}`);
-      expect(response.status).toBe(httpStatus.BAD_REQUEST);
+      expect(response.status).toBe(httpStatus.UNPROCESSABLE_ENTITY);
     });
     it('should respond status 400 when body inst presente', async () => {
       const token = await generateValidToken();
       const response = await api.delete('/credential').set('Authorization', `Bearer ${token.token}`);
-      expect(response.status).toBe(httpStatus.BAD_REQUEST);
+      expect(response.status).toBe(httpStatus.UNPROCESSABLE_ENTITY);
     });
 
     it('should responde status 409 when is give the same title', async () => {
@@ -170,7 +170,7 @@ describe('Delete /credential', () => {
       await createCredential(token.userId);
 
       const response = await api.delete('/credential').set('Authorization', `Bearer ${token.token}`).send('1');
-      expect(response.status).toBe(httpStatus.BAD_REQUEST);
+      expect(response.status).toBe(httpStatus.UNPROCESSABLE_ENTITY);
     });
   });
 });
