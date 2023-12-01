@@ -1,7 +1,7 @@
 import Cryptr from "cryptr";
 import { duplicateCredentialError, notFoundError } from "@/errors";
 import { credentialRepository } from "@/repositories/credential-repository";
-import { CreateCredential } from "@/protocols";
+import { CreateCredential } from "@/protocols/protocols";
 
 async function verifyCredential(userId: number, title: string, username: string) {
     const verifyInfo = await credentialRepository.findCredential(userId, title, username);

@@ -1,5 +1,5 @@
 import { AuthenticatedRequest } from "@/middlewares";
-import { CreateCredential } from "@/protocols";
+import { CreateCredential } from "@/protocols/protocols";
 import { credentialService } from "@/services";
 import { Credential } from "@prisma/client";
 import { Response } from "express";

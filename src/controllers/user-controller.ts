@@ -1,4 +1,4 @@
-import { SignUser } from "@/protocols";
+import { SignUser } from "@/protocols/protocols";
 import { userService } from "@/services";
 import { Request, Response } from "express";
 import httpStatus from "http-status";

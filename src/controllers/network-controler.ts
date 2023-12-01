@@ -2,7 +2,7 @@ import { AuthenticatedRequest } from "@/middlewares";
 import { networkService } from "@/services";
 import { Response } from "express";
 import httpStatus from "http-status";
-import { CreateNetwork, Id, userId } from "@/protocols";
+import { CreateNetwork, Id, userId } from "@/protocols/protocols";
 
 export async function postNetwork(req: AuthenticatedRequest, res: Response) {
     const { userId, network, title, password } = req.body as CreateNetwork;

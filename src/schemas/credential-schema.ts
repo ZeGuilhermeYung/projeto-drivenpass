@@ -1,4 +1,4 @@
-import { CreateCredential, Id } from "@/protocols";
+import { CreateCredential, Id } from "@/protocols/protocols";
 import Joi from "joi";
 
 

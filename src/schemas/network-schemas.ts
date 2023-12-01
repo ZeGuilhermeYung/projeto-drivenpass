@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { CreateNetwork, Id } from "@/protocols";
+import { CreateNetwork, Id } from "@/protocols/protocols";
 
 export const networkBody = Joi.object<CreateNetwork>({
     network: Joi.string().required(),

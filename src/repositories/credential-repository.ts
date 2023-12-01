@@ -1,5 +1,5 @@
 import prisma from "@/database/db";
-import { CreateCredential } from "@/protocols";
+import { CreateCredential } from "@/protocols/protocols";
 
 async function createCredential(data: CreateCredential) {
     return prisma.credential.create({
