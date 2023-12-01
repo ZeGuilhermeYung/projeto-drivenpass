@@ -12,4 +12,4 @@ docker-compose*
 Dockerfile*
 nginx.conf
 credencial-service
-indext.ts
+index.ts

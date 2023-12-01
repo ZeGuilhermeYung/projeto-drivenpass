@@ -7,4 +7,4 @@ const authRouter = Router();
 
 authRouter.post('/',validateSchemaMiddleware(createUserSchema), signIn);
 
-export default authRouter;
+export { authRouter };

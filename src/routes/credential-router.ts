@@ -9,4 +9,4 @@ const credentialRouter = Router()
     .get('/', getCredential)
     .delete('/', validateSchemaMiddleware(credentialDeleteById), deleteCredential)
 
-export default credentialRouter;
+export { credentialRouter };

@@ -1,5 +1,6 @@
 import supertest from 'supertest';
 import app from '../../app';
+import httpStatus from 'http-status';
 
 const request = supertest(app);
 
@@ -21,7 +22,7 @@ describe('Network Integration Tests', () => {
       .set('Authorization', `Bearer ${userToken}`)
       .send({ title: 'Test Network', network: 'TestNetwork', password: 'testpassword' });
 
-    expect(response.status).toBe(201);
+    expect(response.status).toBe(httpStatus.CREATED);
     expect(response.body.title).toBe('Test Network');
     networkId = response.body.id;
   });

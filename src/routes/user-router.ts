@@ -8,4 +8,4 @@ const userRouter = Router();
 userRouter
     .post('/',validateSchemaMiddleware(createUserSchema), postUser);
 
-export default userRouter;
+export { userRouter };

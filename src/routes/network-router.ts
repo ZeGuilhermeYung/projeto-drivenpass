@@ -9,4 +9,4 @@ const networkRouter = Router()
     .get('/', getNetwork)
     .delete('/', validateSchemaMiddleware(networkDelete), deleteNetwork)
 
-export default networkRouter;
+export { networkRouter };

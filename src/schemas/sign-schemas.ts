@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { SignUser } from "@/protocols";
+import { SignUser } from "@/protocols/protocols";
 
 export const createUserSchema = Joi.object<SignUser>({
     email: Joi.string().email().required(),

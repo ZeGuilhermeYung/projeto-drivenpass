@@ -9,5 +9,5 @@ export async function generateValidToken(user?: User) {
 
   await createSession(token);
 
-  return token;
+  return { token, userId: incomingUser.id };
 }

@@ -1,4 +1,4 @@
-import { ApplicationError } from '@/protocols';
+import { ApplicationError } from '@/protocols/protocols';
 
 export function invalidEmailError(email: string): ApplicationError {
   return {
