@@ -23,7 +23,6 @@ export async function createCredential(user?: User) {
 }
 
 export async function createCredentialByData(data: CreateCredential) {
-  const incomingUser = await createUser();
   const cryptPassword = cryptr.encrypt(faker.lorem.word());
 
   return prisma.credential.create({

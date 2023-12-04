@@ -2,7 +2,8 @@ import { AuthenticatedRequest } from "@/middlewares";
 import { networkService } from "@/services";
 import { Response } from "express";
 import httpStatus from "http-status";
-import { CreateNetwork, userId } from "@/protocols/protocols";
+import { CreateNetwork } from "@/protocols/protocols";
+import { Network } from "@prisma/client";
 
 export async function postNetwork(req: AuthenticatedRequest, res: Response) {
     const { network, title, password } = req.body as CreateNetwork;
@@ -13,15 +14,24 @@ export async function postNetwork(req: AuthenticatedRequest, res: Response) {
     return res.sendStatus(httpStatus.CREATED);
 }
 
-export async function getNetwork(req: AuthenticatedRequest, res: Response) {
-    const { userId } = req.body as CreateNetwork;
-    const result = await networkService.getAllNetwork(userId);
+export async function getUsersNetworks(req: AuthenticatedRequest, res: Response) {
+    const { userId } = res.locals;
+    const result = await networkService.getUsersNetworks(userId);
+
+    return res.status(httpStatus.OK).send(result);
+}
+
+export async function getNetworkById(req: AuthenticatedRequest, res: Response) {
+    const { userId } = res.locals;
+    const { id } = req.params;
+    
+    const result = await networkService.getNetworkById(Number(id), userId);
 
     return res.status(httpStatus.OK).send(result);
 }
 
 export async function deleteNetwork(req: AuthenticatedRequest, res: Response) {
-    const { id } = req.body as userId;
+    const { id } = req.body as Network;
     const { userId } = res.locals;
 
     await networkService.deleteNetwork(userId, id);

@@ -11,7 +11,7 @@ async function postCredential(userId: number, title: string, url: string, userna
     const encrypt = cryptr.encrypt(password);
 
     await credentialRepository.createCredential({ title, url, username, password: encrypt, userId });
-    }
+}
 
 async function verifyCredential(userId: number, title: string) {
     const verifyInfo = await credentialRepository.findCredential(userId, title);
@@ -41,7 +41,7 @@ async function getCredentialbyId(id: number, userId: number) {
         ...credential,
         password: cryptr.decrypt(credential.password)
     };
-    console.log(result)
+
     return result;
 }
 

@@ -254,4 +254,14 @@ describe('Delete /credential', () => {
       expect(response.status).toBe(httpStatus.NOT_FOUND);
     });
   });
+  describe('Credential is valid', () => {
+    it('should respond 200 when delete is completed ', async () => {
+      const user = await createUser();
+      const token = await generateValidToken(user);
+      const credential = await createCredential(user);
+
+      const response = await api.delete('/credential').set('Authorization', `Bearer ${token}`).send({id: credential.id});
+      expect(response.status).toBe(httpStatus.OK);
+    });
+  });
 });

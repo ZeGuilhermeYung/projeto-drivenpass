@@ -1,33 +1,56 @@
 import Cryptr from 'cryptr';
 import { networkRepository } from '@/repositories';
-import { notFound } from '@/errors/errors';
+import { notFound, unauthorized } from '@/errors/errors';
+import { Network } from '@prisma/client';
+
+const cryptr = new Cryptr(process.env.CRYPT_PASSWORD);
 
 async function createNetwork(userId: number, title: string, network: string, password: string) {
-  const cryptr = new Cryptr(password);
-
   const encrypt = cryptr.encrypt(password);
 
   await networkRepository.createNetwork({ network, title, password: encrypt, userId });
 }
 
-async function getAllNetwork(userId: number) {
-  const networks = await networkRepository.findUserNetworks(userId);
+async function getUsersNetworks(userId: number) {
+    const networks: Network[] = await networkRepository.findUserNetworks(userId);
 
-  networks.map(network => network.password = this.cryptr.decrypt(network.password));
+    if (networks.length === 0) throw notFound("cant find any network for this user!");
 
-  return networks;
+    networks.map(network => network.password = cryptr.decrypt(network.password));
+
+    return networks;
+}
+
+async function getNetworkById(id: number, userId: number) {
+    const network: Network = await networkRepository.getNetworkById(id);
+
+    if (network && network.userId !== userId)
+        throw unauthorized("this ID does not belong to this user!");
+
+    if (!network) throw notFound("cant find any network for this ID!");
+
+    const result = {
+        ...network,
+        password: cryptr.decrypt(network.password)
+    };
+
+    return result;
 }
 
 async function deleteNetwork(userId: number, id: number) {
-  const verify = await networkRepository.findNetwork(userId, id);
-  if (!verify) throw notFound("Inexistent Network!");
+    const network: Network = await networkRepository.getNetworkById(id);
 
-  await networkRepository.deleteNetwork(userId, id);
+    if (network && network.userId !== userId)
+        throw unauthorized("this ID does not belong to this user!");
 
+    if (!network) throw notFound("cant find any network for this ID!");
+
+    await networkRepository.deleteNetwork(id); 
 }
 
 export const networkService = {
   createNetwork,
-  getAllNetwork,
+  getUsersNetworks,
+  getNetworkById,
   deleteNetwork,
 };
