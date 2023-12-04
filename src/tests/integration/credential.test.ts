@@ -116,7 +116,7 @@ describe('Get /credential/:Id', () => {
       const user = await createUser();
       const token = await generateValidToken(user);
       const credential = await createCredential(user);
-      console.log(credential.id)
+
       const response = await api.get(`/credential/${credential.id}`).set('Authorization', `Bearer ${token}`);
 
       expect(response.status).toBe(httpStatus.OK);
@@ -236,6 +236,22 @@ describe('Delete /credential', () => {
       const token = await generateValidToken();
       const response = await api.delete('/credential').set('Authorization', `Bearer ${token}`);
       expect(response.status).toBe(httpStatus.UNPROCESSABLE_ENTITY);
+    });
+    it('should respond 401 when ID does not belong to the user ', async () => {
+      const user = await createUser();
+      const token = await generateValidToken(user);
+      const credential = await createCredential();
+
+      const response = await api.delete('/credential').set('Authorization', `Bearer ${token}`).send({id: credential.id});
+      expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+    });
+    it('should respond 404 when body is empty ', async () => {
+      const user = await createUser();
+      const token = await generateValidToken(user);
+
+      const response = await api.delete('/credential').set('Authorization', `Bearer ${token}`).send({id: 1});
+
+      expect(response.status).toBe(httpStatus.NOT_FOUND);
     });
   });
 });

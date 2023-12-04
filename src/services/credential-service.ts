@@ -32,9 +32,8 @@ async function getUsersCredentials(userId: number) {
 async function getCredentialbyId(id: number, userId: number) {
     const credential: Credential = await credentialRepository.getCredentialById(id);
 
-    if (credential.userId !== userId)
+    if (credential && credential.userId !== userId)
         throw unauthorized("this ID does not belong to this user!");
-
 
     if (!credential) throw notFound("cant find any credential for this ID!");
 
@@ -47,13 +46,12 @@ async function getCredentialbyId(id: number, userId: number) {
 }
 
 async function deleteCredential(userId: number, id: number) {
-    const credential = await credentialRepository.getCredentialById(id);
-    
-    if (!credential)
-        throw notFound("No credential found with given id!");
-    
-    if (credential.userId !== userId)
-        throw unauthorized("Credential does not belong to the user!");
+    const credential: Credential = await credentialRepository.getCredentialById(id);
+
+    if (credential && credential.userId !== userId)
+        throw unauthorized("this ID does not belong to this user!");
+
+    if (!credential) throw notFound("cant find any credential for this ID!");
 
     await credentialRepository.deleteCredential(id); 
 }
