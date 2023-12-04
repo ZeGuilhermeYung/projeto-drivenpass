@@ -1,20 +1,24 @@
 import * as jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import { invalidEmailError, invalidPasswordError } from "@/errors";
 import { authRepository, userRepository } from "@/repositories";
+import { unauthorized } from '@/errors/errors';
+import { exclude } from '@/utils/prisma.utils';
 
 async function verifyUser(email: string, password: string) {
     const user = await verifyEmail(email);
-
+    
     await verifyPasswordUser(password, user.password);
-    const result = await createSession(user.id);
+    const token = await createSession(user.id);
 
-    return { token:result };
+    return {
+        user: exclude(user, 'password'),
+        token,
+    };
 }
 
 async function verifyEmail(email: string) {
     const user = await userRepository.findByEmail(email);
-    if (!user) throw invalidEmailError(user.email);
+    if (!user) throw unauthorized("This email is inexistent!");
 
     return user;
 }
@@ -22,15 +26,15 @@ async function verifyEmail(email: string) {
 async function verifyPasswordUser(password: string, hash: string) {
     const validatePassword = await bcrypt.compare(password, hash);
 
-    if (!validatePassword) throw invalidPasswordError();
+    if (!validatePassword) throw unauthorized("The password is wrong!");
 }
 
 async function createSession(userId: number) {
-     const token = jwt.sign({ userId }, process.env.JWT_SECRET);
+    const token = jwt.sign({ userId }, process.env.JWT_SECRET);
 
-     await authRepository.createNewSession(userId, token);
+    await authRepository.createNewSession(userId, token);
   
-     return token;
+    return token;
 }
 
 export const authService = {

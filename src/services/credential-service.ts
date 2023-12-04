@@ -1,48 +1,67 @@
 import Cryptr from 'cryptr';
-import { duplicateCredentialError, notFoundError } from '@/errors';
+import { conflictError, notFound, unauthorized } from '@/errors/errors';
 import { credentialRepository } from '@/repositories/credential-repository';
+import { Credential } from '@prisma/client';
+
+const cryptr = new Cryptr(process.env.CRYPT_PASSWORD);
 
 async function postCredential(userId: number, title: string, url: string, username: string, password: string) {
-  await 
+    await verifyCredential(userId, title);
 
-  await verifyCredential(userId, title, username);
+    const encrypt = cryptr.encrypt(password);
 
-  this.cryptr = new Cryptr(password);
+    await credentialRepository.createCredential({ title, url, username, password: encrypt, userId });
+    }
 
-  const encrypt = this.cryptr.encrypt(password);
+async function verifyCredential(userId: number, title: string) {
+    const verifyInfo = await credentialRepository.findCredential(userId, title);
 
-  await credentialRepository.createCredential({ title, url, username, password: encrypt, userId });
+    if (verifyInfo) throw conflictError("You cant pass the same title for other crendetial");
 }
 
-async function verifyCredential(userId: number, title: string, username: string) {
-  const verifyInfo = await credentialRepository.findCredential(userId, title, username);
-  if (verifyInfo) throw duplicateCredentialError();
+async function getUsersCredentials(userId: number) {
+    const credentials: Credential[] = await credentialRepository.getUserCredentials(userId);
+
+    if (credentials.length === 0) throw notFound("cant find any credential for this user!");
+
+    credentials.map(credential => credential.password = cryptr.decrypt(credential.password));
+
+    return credentials;
 }
 
-async function getCredential(userId: number) {
-  const result = await getAllCredential(userId);
+async function getCredentialbyId(id: number, userId: number) {
+    const credential: Credential = await credentialRepository.getCredentialById(id);
 
-  return result;
+    if (credential.userId !== userId)
+        throw unauthorized("this ID does not belong to this user!");
+
+
+    if (!credential) throw notFound("cant find any credential for this ID!");
+
+    const result = {
+        ...credential,
+        password: cryptr.decrypt(credential.password)
+    };
+    console.log(result)
+    return result;
 }
 
 async function deleteCredential(userId: number, id: number) {
-  const verify = await credentialRepository.getCredentialId(userId, id);
-  if (!verify) throw notFoundError();
+    const credential = await credentialRepository.getCredentialById(id);
+    
+    if (!credential)
+        throw notFound("No credential found with given id!");
+    
+    if (credential.userId !== userId)
+        throw unauthorized("Credential does not belong to the user!");
 
-  const result = await credentialRepository.deleteCredential(id, userId);
-  if (!result) throw notFoundError;
+    await credentialRepository.deleteCredential(id); 
 }
 
-async function getAllCredential(userId: number) {
-  const result = await credentialRepository.getCredentialById(userId);
-
-  if (!result) throw notFoundError();
-
-  return result;
-}
 
 export const credentialService = {
   postCredential,
-  getCredential,
-  deleteCredential,
+  getUsersCredentials,
+  getCredentialbyId,
+  deleteCredential
 };

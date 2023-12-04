@@ -7,7 +7,7 @@ async function createNetwork(data: CreateNetwork) {
   });
 }
 
-async function getNetwork(userId: number) {
+async function findUserNetworks(userId: number) {
   return prisma.network.findMany({
     where: {
       userId,
@@ -24,7 +24,7 @@ async function deleteNetwork(userId: number, id: number) {
   });
 }
 
-async function verifyNetworkById(userId: number, id: number) {
+async function findNetwork(userId: number, id: number) {
   return prisma.network.findMany({
     where: {
       userId,
@@ -35,7 +35,7 @@ async function verifyNetworkById(userId: number, id: number) {
 
 export const networkRepository = {
   createNetwork,
-  getNetwork,
+  findUserNetworks,
   deleteNetwork,
-  verifyNetworkById,
+  findNetwork,
 };

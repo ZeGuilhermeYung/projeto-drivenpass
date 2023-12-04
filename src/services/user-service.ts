@@ -1,4 +1,4 @@
-import { invalidEmailError } from "@/errors"
+import { conflictError } from "@/errors/errors";
 import { userRepository } from "@/repositories"
 import bcrypt from 'bcrypt'
 
@@ -13,7 +13,7 @@ async function createUser(email: string, password: string) {
 
 async function verifyUser(email: string) {
     const response = await userRepository.findByEmail(email);
-    if (response) throw invalidEmailError(email);
+    if (response) throw conflictError("This email already exists!");
 }
 
 

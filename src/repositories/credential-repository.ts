@@ -7,37 +7,38 @@ async function createCredential(data: CreateCredential) {
     })
 }
 
-async function findCredential(userId: number, title: string, username: string) {
+async function findCredential(userId: number, title: string) {
+    const credential = prisma.credential.findFirst({
+        where: {
+            AND: {
+                userId,
+                title,
+            }
+        }
+    })
+
+    return credential;
+}
+
+async function getCredentialById(id: number) {
     return prisma.credential.findFirst({
         where: {
-            userId,
-            title,
-            username
+            id
         }
     })
 }
 
-async function getCredentialById(userId: number) {
+async function getUserCredentials(userId: number) {
     return prisma.credential.findMany({
         where: {
-            userId,
-        }
-    })
-}
-
-async function getCredentialId(userId: number, id: number) {
-    return prisma.credential.findMany({
-        where: {
-            id,
             userId
         }
     })
 }
 
-async function deleteCredential(id: number, userId: number) {
+async function deleteCredential(id: number) {
     return prisma.credential.delete({
         where: {
-            userId,
             id
         }
     })
@@ -48,7 +49,6 @@ export const credentialRepository = {
     createCredential,
     findCredential,
     getCredentialById,
-    deleteCredential,
-    getCredentialId
-
+    getUserCredentials,
+    deleteCredential
 }

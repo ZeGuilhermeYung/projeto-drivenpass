@@ -1,28 +1,19 @@
+import status from 'http-status';
 import { Request, Response, NextFunction } from 'express';
-import httpStatus from 'http-status';
+import { ErrorResponse } from '@/protocols/protocols';
 
-export type AppError = Error & {
-  name: string;
-};
+export default function errorHandler(error: ErrorResponse, req: Request, res: Response, next: NextFunction) {
+  if (error.type === "UNPROCESSABLE_ENTITY")
+    return res.status(status.UNPROCESSABLE_ENTITY).send(error.message);
 
-export default function errorHandlingMiddleware(
-  error: Error | AppError,
-  req: Request,
-  res: Response,
-  next: NextFunction, // eslint-disable-line @typescript-eslint/no-unused-vars
-) {
+  if (error.type === "CONFLICT")
+    return res.status(status.CONFLICT).send(error.message);
 
-  if (error.name === 'notFoundError') {
-    return res.status(httpStatus.NOT_FOUND).send(error.message);
-  }
+  if (error.type === "NOT_FOUND")
+    return res.status(status.NOT_FOUND).send(error.message);
 
-  if (error.name === 'invalidIdError' ) {
-    return res.status(httpStatus.UNPROCESSABLE_ENTITY).send(error.message);
-  }
-  if (error.name === 'duplicatedEmailError' || 'invalidEmailError' || 'duplicateCredentialError') {
-    return res.status(httpStatus.CONFLICT).send(error.message);
-  }
+  if (error.type === "UNAUTHORIZED")
+    return res.status(status.UNAUTHORIZED).send(error.message);
 
-  console.log(error);
-  return res.sendStatus(httpStatus.INTERNAL_SERVER_ERROR);
+  return res.status(status.INTERNAL_SERVER_ERROR).send("Sorry, something got wrong!");
 }

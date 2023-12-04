@@ -2,10 +2,11 @@ import { AuthenticatedRequest } from "@/middlewares";
 import { networkService } from "@/services";
 import { Response } from "express";
 import httpStatus from "http-status";
-import { CreateNetwork, Id, userId } from "@/protocols/protocols";
+import { CreateNetwork, userId } from "@/protocols/protocols";
 
 export async function postNetwork(req: AuthenticatedRequest, res: Response) {
-    const { userId, network, title, password } = req.body as CreateNetwork;
+    const { network, title, password } = req.body as CreateNetwork;
+    const { userId } = res.locals;
 
     await networkService.createNetwork(userId, title, network, password);
 
@@ -20,7 +21,8 @@ export async function getNetwork(req: AuthenticatedRequest, res: Response) {
 }
 
 export async function deleteNetwork(req: AuthenticatedRequest, res: Response) {
-    const { userId, id } = req.body as userId;
+    const { id } = req.body as userId;
+    const { userId } = res.locals;
 
     await networkService.deleteNetwork(userId, id);
 

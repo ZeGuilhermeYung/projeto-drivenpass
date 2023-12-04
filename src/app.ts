@@ -2,9 +2,8 @@ import express, { json, Request, Response, Express } from 'express';
 import 'express-async-errors';
 import httpStatus from 'http-status';
 import { userRouter, authRouter, networkRouter, credentialRouter } from './routes/index';
-import errorHandlingMiddleware from './middlewares/errors-middlewares';
+import errorHandler from './middlewares/errors-middlewares';
 import { connectDb } from './database/db';
-import { authenticateToken } from './middlewares';
 
 const app = express();
 
@@ -17,7 +16,7 @@ app
   .use('/signin', authRouter)
   .use('/credential', credentialRouter)
   .use('/network', networkRouter)
-  .use(errorHandlingMiddleware);
+  .use(errorHandler);
 
 export function init(): Promise<Express> {
   connectDb();

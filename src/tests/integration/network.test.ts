@@ -1,98 +1,156 @@
+import * as jwt from 'jsonwebtoken';
 import httpStatus from 'http-status';
 import supertest from 'supertest';
-import app from '../../app';
+import app, { init } from '../../app';
+import { cleanDB } from '../helpers';
+import { faker } from '@faker-js/faker';
+import { createUser, generateValidToken } from '../factory';
+import { createNetwork, createNetworkByData } from '../factory/network-factory';
 
-const request = supertest(app);
+beforeAll(async () => {
+  await init();
+});
 
-describe('Network Integration Tests', () => {
-  let userToken: string;
-  let networkId: number;
+beforeEach(async () => {
+  await cleanDB();
+});
 
-  beforeAll(async () => {
-    const signInResponse = await request
-      .post('/api/auth/signin')
-      .send({ email: 'user@example.com', password: 'userpassword' });
+const api = supertest(app);
 
-    userToken = signInResponse.body.token;
+describe('Get /network', () => {
+  describe('Get the network', () => {
+    it('should respond status 401 when token isnt given ', async () => {
+      const response = await api.get('/network');
+      expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+    });
+
+    it('should respond status 401 when token is invalid ', async () => {
+      const token = faker.lorem.word();
+      const response = await api.get('/network').set('Authorization', `Bearer ${token}`);
+      expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+    });
+
+    it('should respond status 401 when doesnt have session for token', async () => {
+      const user = await createUser();
+      const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET);
+
+      const response = await api.get('/network').set('Authorization', `Bearer ${token}`);
+      expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+    });
   });
 
-  it('should create a new network', async () => {
-    const response = await request
-      .post('/api/network')
-      .set('Authorization', `Bearer ${userToken}`)
-      .send({ title: 'Test Network', network: 'TestNetwork', password: 'testpassword' });
+  describe('when token is valid', () => {
+    it('should respond 200 when token is valid ', async () => {
+      const user = await createUser();
+      await createNetwork(user);
+      const token = await generateValidToken(user);
 
-    expect(response.status).toBe(httpStatus.CREATED);
-    expect(response.body.title).toBe('Test Network');
-    networkId = response.body.id;
+      const response = await api.get('/network').set('Authorization', `Bearer ${token}`);
+      expect(response.status).toBe(httpStatus.OK);
+      expect(response.body).toEqual(
+        expect.objectContaining([
+          {
+            id: expect.any(Number),
+            title: expect.any(String),
+            network: expect.any(String),
+            password: expect.any(String),
+            userId: expect.any(Number),
+          },
+        ]),
+      );
+    });
+  });
+});
+
+describe('Post /network', () => {
+  const createMockNetwork = (userId?: number) => ({
+    title: faker.lorem.word(),
+    network: faker.lorem.word(),
+    password: faker.lorem.word(),
+    userId,
   });
 
-  it('should get all networks', async () => {
-    const response = await request
-      .get('/api/network')
-      .set('Authorization', `Bearer ${userToken}`);
+  describe('token Invalid ', () => {
+    it('should respond status 401 when token is not given', async () => {
+      const response = await api.post('/network').set('Authorization', `Bearer`);
+      expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+    });
 
-    expect(response.status).toBe(httpStatus.OK);
-    expect(response.body).toHaveLength(1);
-    expect(response.body[0].title).toBe('Test Network');
-    expect(response.body[0].password).toBe('testpassword');
+    it('should respond status 401 when token is invalid', async () => {
+      const token = faker.lorem.word();
+      const response = await api.post('/network').set('Authorization', `Bearer ${token}`);
+      expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+    });
+
+    it('should respond status 401 when doesnt have session for token', async () => {
+      const user = await createUser();
+      const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET);
+
+      const response = await api.post('/network').set('Authorization', `Bearer ${token}`);
+      expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+    });
   });
 
-  it('should get a specific network by id', async () => {
-    const response = await request
-      .get(`/api/network/${networkId}`)
-      .set('Authorization', `Bearer ${userToken}`);
+  describe('Token is valid', () => {
+    it('should respond status 422 when body inst given ', async () => {
+      const token = await generateValidToken();
+      const body = { [faker.lorem.word()]: faker.lorem.word() };
 
-    expect(response.status).toBe(httpStatus.OK);
-    expect(response.body.title).toBe('Test Network');
-    expect(response.body.password).toBe('testpassword');
+      const response = await api.post('/network').set('Authorization', `Bearer ${token}`).send(body);
+      expect(response.status).toBe(httpStatus.UNPROCESSABLE_ENTITY);
+    });
+    it('should respond status 422 when body isnt present', async () => {
+      const token = await generateValidToken();
+      const response = await api.post('/network').set('Authorization', `Bearer ${token}`);
+      expect(response.status).toBe(httpStatus.UNPROCESSABLE_ENTITY);
+    });
+
+    describe('network is valid', () => {
+      it('should respond status 201', async () => {
+        const user = await createUser();
+        const token = await generateValidToken(user);
+        const body = createMockNetwork(user.id);
+
+        const response = await api.post('/network').set('Authorization', `Bearer ${token}`).send(body);
+        expect(response.status).toBe(httpStatus.CREATED);
+      });
+    });
+  });
+});
+
+describe('Delete /network', () => {
+  describe('token Invalid ', () => {
+    it('should respond status 401 when token isnt given ', async () => {
+      const response = await api.delete('/network').set('Authorization', `Bearer`);
+      expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+    });
+
+    it('should respond status 401 when token isnt invalid ', async () => {
+      const token = faker.lorem.word();
+      const response = await api.delete('/network').set('Authorization', `Bearer ${token}`);
+      expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+    });
+
+    it('should respond status 401 when dont have session for token', async () => {
+      const user = await createUser();
+      const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET);
+
+      const response = await api.delete('/network').set('Authorization', `Bearer ${token}`);
+      expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+    });
   });
 
-  it('should not get a network of another user', async () => {
-    const anotherUserToken = 'anotherUserToken';
+  describe('Token is valid', () => {
+    it('should respond status 422 when body is not given ', async () => {
+      const token = await generateValidToken();
 
-    const response = await request
-      .get(`/api/network/${networkId}`)
-      .set('Authorization', `Bearer ${anotherUserToken}`);
-
-    expect(response.status).toBe(httpStatus.NOT_FOUND);
-  });
-
-  it('should not get a non-existent network', async () => {
-    const nonExistentNetworkId = 9999;
-
-    const response = await request
-      .get(`/api/network/${nonExistentNetworkId}`)
-      .set('Authorization', `Bearer ${userToken}`);
-
-    expect(response.status).toBe(httpStatus.NOT_FOUND);
-  });
-
-  it('should delete a network', async () => {
-    const response = await request
-      .delete(`/api/network/${networkId}`)
-      .set('Authorization', `Bearer ${userToken}`);
-
-    expect(response.status).toBe(httpStatus.OK);
-  });
-
-  it('should not delete a network of another user', async () => {
-    const anotherUserToken = 'anotherUserToken';
-
-    const response = await request
-      .delete(`/api/network/${networkId}`)
-      .set('Authorization', `Bearer ${anotherUserToken}`);
-
-    expect(response.status).toBe(httpStatus.NOT_FOUND);
-  });
-
-  it('should not delete a non-existent network', async () => {
-    const nonExistentNetworkId = 9999;
-
-    const response = await request
-      .delete(`/api/network/${nonExistentNetworkId}`)
-      .set('Authorization', `Bearer ${userToken}`);
-
-    expect(response.status).toBe(httpStatus.NOT_FOUND);
+      const response = await api.delete('/network').set('Authorization', `Bearer ${token}`);
+      expect(response.status).toBe(httpStatus.UNPROCESSABLE_ENTITY);
+    });
+    it('should respond status 422 when body is not present', async () => {
+      const token = await generateValidToken();
+      const response = await api.delete('/network').set('Authorization', `Bearer ${token}`);
+      expect(response.status).toBe(httpStatus.UNPROCESSABLE_ENTITY);
+    });
   });
 });

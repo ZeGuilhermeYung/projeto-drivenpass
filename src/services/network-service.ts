@@ -1,6 +1,6 @@
 import Cryptr from 'cryptr';
 import { networkRepository } from '@/repositories';
-import { notFoundError } from '@/errors';
+import { notFound } from '@/errors/errors';
 
 async function createNetwork(userId: number, title: string, network: string, password: string) {
   const cryptr = new Cryptr(password);
@@ -11,16 +11,19 @@ async function createNetwork(userId: number, title: string, network: string, pas
 }
 
 async function getAllNetwork(userId: number) {
-  const reponse = await networkRepository.getNetwork(userId);
+  const networks = await networkRepository.findUserNetworks(userId);
 
-  return reponse;
+  networks.map(network => network.password = this.cryptr.decrypt(network.password));
+
+  return networks;
 }
-async function deleteNetwork(userId: number, id: number) {
-  const verify = await networkRepository.verifyNetworkById(userId, id);
-  if (!verify) throw notFoundError();
 
-  const result = await networkRepository.deleteNetwork(userId, id);
-  if (!result) notFoundError();
+async function deleteNetwork(userId: number, id: number) {
+  const verify = await networkRepository.findNetwork(userId, id);
+  if (!verify) throw notFound("Inexistent Network!");
+
+  await networkRepository.deleteNetwork(userId, id);
+
 }
 
 export const networkService = {

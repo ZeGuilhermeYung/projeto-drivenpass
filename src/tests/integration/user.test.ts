@@ -7,13 +7,13 @@ import app from '@/app';
 const api = supertest(app);
 
 describe('Post /signup', () => {
-  it('Error badrequest when is not give body', async () => {
+  it('should respond status 422 when is not given body', async () => {
     const response = await api.post('/signup');
 
     expect(response.status).toBe(httpStatus.UNPROCESSABLE_ENTITY);
   });
 
-  it('should respond status 409 when body is invalid', async () => {
+  it('should respond status 422 when body is invalid', async () => {
     const invalidBody = { [faker.lorem.word()]: faker.lorem.word() };
 
     const response = await api.post('/signup').send(invalidBody);
@@ -27,7 +27,7 @@ describe('Post /signup', () => {
       password: faker.internet.password(10),
     });
 
-    it('should respond status 409 when email exist', async () => {
+    it('should respond status 409 when email already exists', async () => {
       const body = postBody();
       await createUser(body);
 

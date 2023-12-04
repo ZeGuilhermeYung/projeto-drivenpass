@@ -9,15 +9,15 @@ async function createNewSession(userId: number, token: string) {
     })
 }
 
-async function findToken(token: string) {
+async function findSession(token: string) {
     return prisma.session.findFirst({
         where: {
-            token: token
+            token
         }
     })
 }
 
 export const authRepository = {
     createNewSession,
-    findToken
+    findSession
 }   

@@ -8,13 +8,13 @@ import app from '@/app';
 const api = supertest(app);
 
 describe('Post /signin', () => {
-  it('Error badrequest when is not give body', async () => {
+  it('should respond status 422 when is not given body', async () => {
     const response = await api.post('/signup');
 
     expect(response.status).toBe(httpStatus.UNPROCESSABLE_ENTITY);
   });
 
-  it('should respond status 409 when body is invalid', async () => {
+  it('should respond status 422 when body is invalid', async () => {
     const invalidBody = { [faker.lorem.word()]: faker.lorem.word() };
 
     const response = await api.post('/signup').send(invalidBody);
@@ -28,22 +28,22 @@ describe('Post /signin', () => {
       password: faker.internet.password(10),
     });
 
-    it('should respond status 409 when email not exist', async () => {
+    it('should respond status 401 when email doesnt exists', async () => {
       const body = postBody();
 
       const response = await api.post('/signin').send(body);
-      expect(response.status).toBe(httpStatus.CONFLICT);
+      expect(response.status).toBe(httpStatus.UNAUTHORIZED);
     });
 
-    it('should respond status 409 when email its wrong', async () => {
+    it('should respond status 401 when email is wrong', async () => {
       const body = postBody();
       await createUser(body);
 
       const response = await api.post('/signin').send({ email: faker.internet.email(), password: body.password });
-      expect(response.status).toBe(httpStatus.CONFLICT);
+      expect(response.status).toBe(httpStatus.UNAUTHORIZED);
     });
 
-    it('should responde status 409 when password is wrong', async () => {
+    it('should responde status 401 when password is wrong', async () => {
       const body = postBody();
       await createUser(body);
 
@@ -51,11 +51,11 @@ describe('Post /signin', () => {
         email: body.email,
         password: faker.internet.password(10),
       });
-      expect(response.status).toBe(httpStatus.CONFLICT);
+      expect(response.status).toBe(httpStatus.UNAUTHORIZED);
     });
 
     describe('when login is ok', () => {
-      it('should with status 200 and recive token', async () => {
+      it('should with status 200 and receive token', async () => {
         const body = postBody();
         await createUser(body);
 

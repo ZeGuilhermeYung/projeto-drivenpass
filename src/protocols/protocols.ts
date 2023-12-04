@@ -5,9 +5,9 @@ export type SignUser = {
     password: string;
 }
 
-export type ApplicationError = {
-    name: string;
-    message: string;
+export type ErrorResponse = {
+    type: string;
+    message: string | string[];
 }
 
 export type Id = {
