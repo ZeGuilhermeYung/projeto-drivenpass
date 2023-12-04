@@ -7,19 +7,6 @@ async function createNetwork(data: CreateNetwork) {
   });
 }
 
-async function findNetwork(userId: number, title: string) {
-  const network = prisma.network.findFirst({
-      where: {
-          AND: {
-              userId,
-              title,
-          }
-      }
-  })
-
-  return network;
-}
-
 async function getNetworkById(id: number) {
   return prisma.network.findFirst({
       where: {
@@ -48,6 +35,5 @@ export const networkRepository = {
   createNetwork,
   findUserNetworks,
   deleteNetwork,
-  findNetwork,
   getNetworkById
 };
