@@ -43,7 +43,7 @@ describe('Get /network', () => {
 
       const response = await api.get('/network').set('Authorization', `Bearer ${token}`);
 
-      expect(response.status).toBe(httpStatus.NOT_FOUND);
+      expect(response.status).toEqual(httpStatus.NOT_FOUND);
     });
 });
 
@@ -105,7 +105,7 @@ describe('Get /network/:Id', () => {
 
       const response = await api.get(`/network/1`).set('Authorization', `Bearer ${token}`);
 
-      expect(response.status).toBe(httpStatus.NOT_FOUND);
+      expect(response.status).toEqual(httpStatus.NOT_FOUND);
     });
   });
 
@@ -167,12 +167,12 @@ describe('Post /network', () => {
       const body = { [faker.lorem.word()]: faker.lorem.word() };
 
       const response = await api.post('/network').set('Authorization', `Bearer ${token}`).send(body);
-      expect(response.status).toBe(httpStatus.UNPROCESSABLE_ENTITY);
+      expect(response.status).toEqual(httpStatus.UNPROCESSABLE_ENTITY);
     });
     it('should respond status 422 when body isnt present', async () => {
       const token = await generateValidToken();
       const response = await api.post('/network').set('Authorization', `Bearer ${token}`);
-      expect(response.status).toBe(httpStatus.UNPROCESSABLE_ENTITY);
+      expect(response.status).toEqual(httpStatus.UNPROCESSABLE_ENTITY);
     });
     describe('network is valid', () => {
       it('should respond status 201', async () => {
@@ -181,7 +181,7 @@ describe('Post /network', () => {
         const body = createMocknetwork(user.id);
 
         const response = await api.post('/network').set('Authorization', `Bearer ${token}`).send(body);
-        expect(response.status).toBe(httpStatus.CREATED);
+        expect(response.status).toEqual(httpStatus.CREATED);
       });
     });
   });
@@ -214,12 +214,12 @@ describe('Delete /network', () => {
       const token = await generateValidToken();
 
       const response = await api.delete('/network').set('Authorization', `Bearer ${token}`);
-      expect(response.status).toBe(httpStatus.UNPROCESSABLE_ENTITY);
+      expect(response.status).toEqual(httpStatus.UNPROCESSABLE_ENTITY);
     });
     it('should respond status 422 when body is not present', async () => {
       const token = await generateValidToken();
       const response = await api.delete('/network').set('Authorization', `Bearer ${token}`);
-      expect(response.status).toBe(httpStatus.UNPROCESSABLE_ENTITY);
+      expect(response.status).toEqual(httpStatus.UNPROCESSABLE_ENTITY);
     });
     it('should respond 401 when ID does not belong to the user ', async () => {
       const user = await createUser();
@@ -235,7 +235,7 @@ describe('Delete /network', () => {
 
       const response = await api.delete('/network').set('Authorization', `Bearer ${token}`).send({id: 1});
 
-      expect(response.status).toBe(httpStatus.NOT_FOUND);
+      expect(response.status).toEqual(httpStatus.NOT_FOUND);
     });
   });
   describe('Network is valid', () => {

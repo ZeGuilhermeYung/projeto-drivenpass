@@ -2,7 +2,6 @@ import * as jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { authRepository, userRepository } from "@/repositories";
 import { unauthorized } from '@/errors/errors';
-import { exclude } from '@/utils/prisma.utils';
 
 async function verifyUser(email: string, password: string) {
     const user = await verifyEmail(email);
@@ -11,7 +10,7 @@ async function verifyUser(email: string, password: string) {
     const token = await createSession(user.id);
 
     return {
-        user: exclude(user, 'password'),
+        user,
         token,
     };
 }

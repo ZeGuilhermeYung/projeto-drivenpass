@@ -11,7 +11,7 @@ describe('Post /signin', () => {
   it('should respond status 422 when is not given body', async () => {
     const response = await api.post('/signup');
 
-    expect(response.status).toBe(httpStatus.UNPROCESSABLE_ENTITY);
+    expect(response.status).toEqual(httpStatus.UNPROCESSABLE_ENTITY);
   });
 
   it('should respond status 422 when body is invalid', async () => {
@@ -19,7 +19,7 @@ describe('Post /signin', () => {
 
     const response = await api.post('/signup').send(invalidBody);
 
-    expect(response.status).toBe(httpStatus.UNPROCESSABLE_ENTITY);
+    expect(response.status).toEqual(httpStatus.UNPROCESSABLE_ENTITY);
   });
 
   describe('When body is valid', () => {

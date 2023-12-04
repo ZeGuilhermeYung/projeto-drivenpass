@@ -44,7 +44,7 @@ describe('Get /credential', () => {
 
       const response = await api.get('/credential').set('Authorization', `Bearer ${token}`);
 
-      expect(response.status).toBe(httpStatus.NOT_FOUND);
+      expect(response.status).toEqual(httpStatus.NOT_FOUND);
     });
 });
 
@@ -107,7 +107,7 @@ describe('Get /credential/:Id', () => {
 
       const response = await api.get(`/credential/1`).set('Authorization', `Bearer ${token}`);
 
-      expect(response.status).toBe(httpStatus.NOT_FOUND);
+      expect(response.status).toEqual(httpStatus.NOT_FOUND);
     });
   });
 
@@ -171,12 +171,12 @@ describe('Post /credential', () => {
       const body = { [faker.lorem.word()]: faker.lorem.word() };
 
       const response = await api.post('/credential').set('Authorization', `Bearer ${token}`).send(body);
-      expect(response.status).toBe(httpStatus.UNPROCESSABLE_ENTITY);
+      expect(response.status).toEqual(httpStatus.UNPROCESSABLE_ENTITY);
     });
     it('should respond status 422 when body isnt present', async () => {
       const token = await generateValidToken();
       const response = await api.post('/credential').set('Authorization', `Bearer ${token}`);
-      expect(response.status).toBe(httpStatus.UNPROCESSABLE_ENTITY);
+      expect(response.status).toEqual(httpStatus.UNPROCESSABLE_ENTITY);
     });
 
     it('should respond status 409 when is given the same title', async () => {
@@ -187,7 +187,7 @@ describe('Post /credential', () => {
       await createCredentialByData(body);
 
       const response = await api.post('/credential').set('Authorization', `Bearer ${token}`).send(body);
-      expect(response.status).toBe(httpStatus.CONFLICT);
+      expect(response.status).toEqual(httpStatus.CONFLICT);
     });
 
     describe('Credential is valid', () => {
@@ -197,7 +197,7 @@ describe('Post /credential', () => {
         const body = createMockCredential(user.id);
 
         const response = await api.post('/credential').set('Authorization', `Bearer ${token}`).send(body);
-        expect(response.status).toBe(httpStatus.CREATED);
+        expect(response.status).toEqual(httpStatus.CREATED);
       });
     });
   });
@@ -230,12 +230,12 @@ describe('Delete /credential', () => {
       const token = await generateValidToken();
 
       const response = await api.delete('/credential').set('Authorization', `Bearer ${token}`);
-      expect(response.status).toBe(httpStatus.UNPROCESSABLE_ENTITY);
+      expect(response.status).toEqual(httpStatus.UNPROCESSABLE_ENTITY);
     });
     it('should respond status 422 when body is not present', async () => {
       const token = await generateValidToken();
       const response = await api.delete('/credential').set('Authorization', `Bearer ${token}`);
-      expect(response.status).toBe(httpStatus.UNPROCESSABLE_ENTITY);
+      expect(response.status).toEqual(httpStatus.UNPROCESSABLE_ENTITY);
     });
     it('should respond 401 when ID does not belong to the user ', async () => {
       const user = await createUser();
@@ -251,7 +251,7 @@ describe('Delete /credential', () => {
 
       const response = await api.delete('/credential').set('Authorization', `Bearer ${token}`).send({id: 1});
 
-      expect(response.status).toBe(httpStatus.NOT_FOUND);
+      expect(response.status).toEqual(httpStatus.NOT_FOUND);
     });
   });
   describe('Credential is valid', () => {
