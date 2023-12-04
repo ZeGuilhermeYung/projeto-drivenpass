@@ -9,16 +9,16 @@ async function createNetwork(data: CreateNetwork) {
 
 async function getNetworkById(id: number) {
   return prisma.network.findFirst({
-      where: {
-          id
-      }
-  })
+    where: {
+      id,
+    },
+  });
 }
 
 async function findUserNetworks(userId: number) {
   return prisma.network.findMany({
     where: {
-      userId
+      userId,
     },
   });
 }
@@ -26,7 +26,7 @@ async function findUserNetworks(userId: number) {
 async function deleteNetwork(id: number) {
   return prisma.network.delete({
     where: {
-      id
+      id,
     },
   });
 }
@@ -35,5 +35,5 @@ export const networkRepository = {
   createNetwork,
   findUserNetworks,
   deleteNetwork,
-  getNetworkById
+  getNetworkById,
 };

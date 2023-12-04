@@ -5,8 +5,8 @@ import * as jwt from 'jsonwebtoken';
 import { generateValidToken } from '..//factory/token-factory';
 import { createUser } from '..//factory/user-factory';
 import { createCredential, createCredentialByData } from '..//factory/credential-factory';
-import app, { init } from '@/app';
 import { cleanDB } from '../helpers';
+import app, { init } from '@/app';
 
 beforeAll(async () => {
   await init();
@@ -46,30 +46,31 @@ describe('Get /credential', () => {
 
       expect(response.status).toEqual(httpStatus.NOT_FOUND);
     });
-});
-
-describe('when token is valid', () => {
-  it('should respond 200 when token is valid ', async () => {
-    const user = await createUser();
-    const token = await generateValidToken(user);
-    await createCredential(user);
-
-    const response = await api.get('/credential').set('Authorization', `Bearer ${token}`);
-
-    expect(response.status).toBe(httpStatus.OK);
-    expect(response.body).toEqual(expect.arrayContaining([
-      {
-        id: expect.any(Number),
-        title: expect.any(String),
-        url: expect.any(String),
-        username: expect.any(String),
-        password: expect.any(String),
-        userId: user.id
-      },
-    ]),
-    );
   });
-});
+
+  describe('when token is valid', () => {
+    it('should respond 200 when token is valid ', async () => {
+      const user = await createUser();
+      const token = await generateValidToken(user);
+      await createCredential(user);
+
+      const response = await api.get('/credential').set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(httpStatus.OK);
+      expect(response.body).toEqual(
+        expect.arrayContaining([
+          {
+            id: expect.any(Number),
+            title: expect.any(String),
+            url: expect.any(String),
+            username: expect.any(String),
+            password: expect.any(String),
+            userId: user.id,
+          },
+        ]),
+      );
+    });
+  });
 });
 
 describe('Get /credential/:Id', () => {
@@ -120,16 +121,15 @@ describe('Get /credential/:Id', () => {
       const response = await api.get(`/credential/${credential.id}`).set('Authorization', `Bearer ${token}`);
 
       expect(response.status).toBe(httpStatus.OK);
-      expect(response.body).toEqual(expect.objectContaining(
-        {
+      expect(response.body).toEqual(
+        expect.objectContaining({
           id: credential.id,
           title: expect.any(String),
           url: expect.any(String),
           username: expect.any(String),
           password: expect.any(String),
-          userId: user.id
-        },
-      ),
+          userId: user.id,
+        }),
       );
     });
   });
@@ -242,14 +242,17 @@ describe('Delete /credential', () => {
       const token = await generateValidToken(user);
       const credential = await createCredential();
 
-      const response = await api.delete('/credential').set('Authorization', `Bearer ${token}`).send({id: credential.id});
+      const response = await api
+        .delete('/credential')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ id: credential.id });
       expect(response.status).toBe(httpStatus.UNAUTHORIZED);
     });
     it('should respond 404 when body is empty ', async () => {
       const user = await createUser();
       const token = await generateValidToken(user);
 
-      const response = await api.delete('/credential').set('Authorization', `Bearer ${token}`).send({id: 1});
+      const response = await api.delete('/credential').set('Authorization', `Bearer ${token}`).send({ id: 1 });
 
       expect(response.status).toEqual(httpStatus.NOT_FOUND);
     });
@@ -260,7 +263,10 @@ describe('Delete /credential', () => {
       const token = await generateValidToken(user);
       const credential = await createCredential(user);
 
-      const response = await api.delete('/credential').set('Authorization', `Bearer ${token}`).send({id: credential.id});
+      const response = await api
+        .delete('/credential')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ id: credential.id });
       expect(response.status).toBe(httpStatus.OK);
     });
   });

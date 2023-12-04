@@ -1,7 +1,7 @@
 import Cryptr from 'cryptr';
+import { Network } from '@prisma/client';
 import { networkRepository } from '@/repositories';
 import { notFound, unauthorized } from '@/errors/errors';
-import { Network } from '@prisma/client';
 
 const cryptr = new Cryptr(process.env.CRYPT_PASSWORD);
 
@@ -12,40 +12,38 @@ async function createNetwork(userId: number, title: string, network: string, pas
 }
 
 async function getUsersNetworks(userId: number) {
-    const networks: Network[] = await networkRepository.findUserNetworks(userId);
+  const networks: Network[] = await networkRepository.findUserNetworks(userId);
 
-    if (networks.length === 0) throw notFound("cant find any network for this user!");
+  if (networks.length === 0) throw notFound('cant find any network for this user!');
 
-    networks.map(network => network.password = cryptr.decrypt(network.password));
+  networks.map((network) => (network.password = cryptr.decrypt(network.password)));
 
-    return networks;
+  return networks;
 }
 
 async function getNetworkById(id: number, userId: number) {
-    const network: Network = await networkRepository.getNetworkById(id);
+  const network: Network = await networkRepository.getNetworkById(id);
 
-    if (network && network.userId !== userId)
-        throw unauthorized("this ID does not belong to this user!");
+  if (network && network.userId !== userId) throw unauthorized('this ID does not belong to this user!');
 
-    if (!network) throw notFound("cant find any network for this ID!");
+  if (!network) throw notFound('cant find any network for this ID!');
 
-    const result = {
-        ...network,
-        password: cryptr.decrypt(network.password)
-    };
+  const result = {
+    ...network,
+    password: cryptr.decrypt(network.password),
+  };
 
-    return result;
+  return result;
 }
 
 async function deleteNetwork(userId: number, id: number) {
-    const network: Network = await networkRepository.getNetworkById(id);
+  const network: Network = await networkRepository.getNetworkById(id);
 
-    if (network && network.userId !== userId)
-        throw unauthorized("this ID does not belong to this user!");
+  if (network && network.userId !== userId) throw unauthorized('this ID does not belong to this user!');
 
-    if (!network) throw notFound("cant find any network for this ID!");
+  if (!network) throw notFound('cant find any network for this ID!');
 
-    await networkRepository.deleteNetwork(id); 
+  await networkRepository.deleteNetwork(id);
 }
 
 export const networkService = {

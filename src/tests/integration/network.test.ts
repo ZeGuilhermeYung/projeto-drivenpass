@@ -1,9 +1,9 @@
 import * as jwt from 'jsonwebtoken';
 import httpStatus from 'http-status';
 import supertest from 'supertest';
+import { faker } from '@faker-js/faker';
 import app, { init } from '../../app';
 import { cleanDB } from '../helpers';
-import { faker } from '@faker-js/faker';
 import { createUser, generateValidToken } from '../factory';
 import { createNetwork } from '../factory/network-factory';
 
@@ -45,29 +45,30 @@ describe('Get /network', () => {
 
       expect(response.status).toEqual(httpStatus.NOT_FOUND);
     });
-});
-
-describe('when token is valid', () => {
-  it('should respond 200 when token is valid ', async () => {
-    const user = await createUser();
-    const token = await generateValidToken(user);
-    await createNetwork(user);
-
-    const response = await api.get('/network').set('Authorization', `Bearer ${token}`);
-
-    expect(response.status).toBe(httpStatus.OK);
-    expect(response.body).toEqual(expect.arrayContaining([
-      {
-        id: expect.any(Number),
-        title: expect.any(String),
-        network: expect.any(String),
-        password: expect.any(String),
-        userId: user.id
-      },
-    ]),
-    );
   });
-});
+
+  describe('when token is valid', () => {
+    it('should respond 200 when token is valid ', async () => {
+      const user = await createUser();
+      const token = await generateValidToken(user);
+      await createNetwork(user);
+
+      const response = await api.get('/network').set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(httpStatus.OK);
+      expect(response.body).toEqual(
+        expect.arrayContaining([
+          {
+            id: expect.any(Number),
+            title: expect.any(String),
+            network: expect.any(String),
+            password: expect.any(String),
+            userId: user.id,
+          },
+        ]),
+      );
+    });
+  });
 });
 
 describe('Get /network/:Id', () => {
@@ -118,15 +119,14 @@ describe('Get /network/:Id', () => {
       const response = await api.get(`/network/${network.id}`).set('Authorization', `Bearer ${token}`);
 
       expect(response.status).toBe(httpStatus.OK);
-      expect(response.body).toEqual(expect.objectContaining(
-        {
+      expect(response.body).toEqual(
+        expect.objectContaining({
           id: network.id,
           title: expect.any(String),
           network: expect.any(String),
           password: expect.any(String),
-          userId: user.id
-        },
-      ),
+          userId: user.id,
+        }),
       );
     });
   });
@@ -226,14 +226,14 @@ describe('Delete /network', () => {
       const token = await generateValidToken(user);
       const network = await createNetwork();
 
-      const response = await api.delete('/network').set('Authorization', `Bearer ${token}`).send({id: network.id});
+      const response = await api.delete('/network').set('Authorization', `Bearer ${token}`).send({ id: network.id });
       expect(response.status).toBe(httpStatus.UNAUTHORIZED);
     });
     it('should respond 404 when body is empty ', async () => {
       const user = await createUser();
       const token = await generateValidToken(user);
 
-      const response = await api.delete('/network').set('Authorization', `Bearer ${token}`).send({id: 1});
+      const response = await api.delete('/network').set('Authorization', `Bearer ${token}`).send({ id: 1 });
 
       expect(response.status).toEqual(httpStatus.NOT_FOUND);
     });
@@ -244,7 +244,7 @@ describe('Delete /network', () => {
       const token = await generateValidToken(user);
       const network = await createNetwork(user);
 
-      const response = await api.delete('/network').set('Authorization', `Bearer ${token}`).send({id: network.id});
+      const response = await api.delete('/network').set('Authorization', `Bearer ${token}`).send({ id: network.id });
       expect(response.status).toBe(httpStatus.OK);
     });
   });

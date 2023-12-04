@@ -1,7 +1,7 @@
-import Joi from "joi";
-import { SignUser } from "@/protocols/protocols";
+import Joi from 'joi';
+import { SignUser } from '@/protocols/protocols';
 
 export const createUserSchema = Joi.object<SignUser>({
-    email: Joi.string().email().required(),
-    password: Joi.string().min(10).required()
-})
+  email: Joi.string().email().required(),
+  password: Joi.string().min(10).required(),
+});
